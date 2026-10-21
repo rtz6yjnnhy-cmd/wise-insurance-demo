@@ -1216,7 +1216,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
     let leaves = [];
     const golden = i => (i * 0.618034) % 1;                    // even spread across the width
     const build = () => {
-      const count = innerWidth <= 700 ? 8 : 14;
+      const count = innerWidth <= 700 ? 4 : 6;
       if (leaves.length === count) return;
       leafLayer.textContent = '';
       leaves = Array.from({ length: count }, (_, i) => {
@@ -1225,7 +1225,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
         el.className = 'leaf';
         el.innerHTML = '<span class="leaf-sway"><svg viewBox="0 0 24 40"><use href="#leaf"/></svg></span>';
         el.style.setProperty('--s', (11 + depth * 15 + golden(i + 3) * 4).toFixed(1) + 'px');
-        el.style.setProperty('--o', (.38 + depth * .42).toFixed(2));
+        el.style.setProperty('--o', (.32 + depth * .36).toFixed(2));
         el.style.setProperty('--d', (13 + golden(i + 7) * 10).toFixed(1) + 's');
         el.style.setProperty('--dl', (-golden(i + 11) * 20).toFixed(1) + 's');
         el.style.setProperty('--r', Math.round(-60 + golden(i + 5) * 120) + 'deg');
