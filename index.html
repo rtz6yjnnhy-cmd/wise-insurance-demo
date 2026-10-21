@@ -489,7 +489,7 @@ fieldset.invalid .chip span{border-color:rgba(163,57,43,.5)}
 /* phones: no backdrop blur or per-particle shadows while scrolling */
 @media (max-width:900px){
   .header.scrolled{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(7,26,51,.97)}
-  .leaf-sway,.feather{filter:none}
+  .feather{filter:none}
 }
 
 /* Language switch (ES default / EN) */
@@ -519,20 +519,30 @@ fieldset.invalid .chip span{border-color:rgba(163,57,43,.5)}
 .js .crack.in .lv3{transition:stroke-dashoffset 1s var(--m) 1.3s}
 .section > .wrap,.footer > .wrap,.hs-sticky > :not(.crack){position:relative;z-index:1}
 
-/* Gold leaves: a sparse foreground layer drifting through the whole page.
-   Each leaf sways and turns on its own (CSS) and rises at its own depth speed
-   while scrolling (JS), wrapping around the viewport. */
-.leaves{position:fixed;inset:0;z-index:46;pointer-events:none;overflow:hidden;overflow:clip}
-.leaf{position:absolute;left:0;top:0;width:var(--s);will-change:transform}
-.leaf-sway{display:block;width:100%;opacity:var(--o);animation:leafSway var(--d) ease-in-out infinite alternate;animation-delay:var(--dl);
-  filter:drop-shadow(0 2px 2px rgba(7,26,51,.18))}
-.leaf-sway svg{display:block;width:100%;height:auto;overflow:visible}
-@keyframes leafSway{
-  0%{transform:perspective(320px) translate(0,0) rotate(0deg) rotateY(-50deg)}
-  35%{transform:perspective(320px) translate(16px,12px) rotate(20deg) rotateY(10deg)}
-  70%{transform:perspective(320px) translate(-12px,22px) rotate(-10deg) rotateY(45deg)}
-  100%{transform:perspective(320px) translate(8px,-4px) rotate(8deg) rotateY(-20deg)}
+/* =========================================================
+   LITE MOTION (phones and touch devices): a steady frame rate matters more
+   than every flourish. Keeps the hero, owl flight, galleries, reveals and
+   timeline; drops GPU-heavy continuous effects.
+   ========================================================= */
+@media (max-width:900px),(pointer:coarse){
+  .js main > section,.js .footer,.js .hero,.js [data-plx]{animation:none!important;transform:none;opacity:1}
+  .w,.hero h1 .w,[data-split],.hero h1,.btn,.hs-link,.link-btn,.music,.chip span,.nav a.link,.hs-num,.step-num,.hs-count,.eyebrow,.lede,.hs-intro p,.step p,.principle,.assurances li,.form-title,.demo-note,.footer-links a{animation:none!important}
+  .fcard-in{animation:none!important;box-shadow:0 18px 30px -18px rgba(7,26,51,.5)}
+  .fcard::after,.glare{display:none}
+  .fcard img{inset:0;width:100%;height:100%}
+  .js .crack path{stroke-dashoffset:0!important;transition:none!important}
+  .owl,.logo-base{filter:none}
+  .owl{animation-duration:9s}
+  .plaque::after{display:none}
+  /* galleries: the browser drives the horizontal move from scroll (no JS per frame) */
+  @supports (view-timeline-name:--hs){
+    .js .hs{view-timeline-name:--hs}
+    .js .hs .hs-track{animation:hsMove linear both;animation-timeline:--hs;animation-range:contain 0% contain 100%}
+    .js .hs .hs-progress i{animation:hsBar linear both;animation-timeline:--hs;animation-range:contain 0% contain 100%}
+  }
 }
+@keyframes hsMove{from{transform:translate3d(0,0,0)}to{transform:translate3d(calc(-100% + 100vw),0,0)}}
+@keyframes hsBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
 /* Background music control */
 .music{position:fixed;left:max(16px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));z-index:48;display:flex;align-items:center;gap:12px;height:46px;padding:0 20px 0 16px;border-radius:100px;
@@ -605,7 +615,6 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
 @media (prefers-reduced-motion:reduce){
   .js main > section,.js .footer{animation:none!important;transform:none!important;opacity:1!important}
   .feathers{display:none}
-  .leaves{display:none}
   [data-split],.hero h1{animation:none!important}
   .js .crack path{stroke-dashoffset:0!important;transition:none!important}
   .w,.btn,.hs-link,.link-btn,.music,.chip span,.nav a.link,.hs-num,.step-num,.hs-count,.eyebrow,.lede,.hs-intro p,.step p,.principle,.assurances li,.form-title,.demo-note,.footer-links a{animation:none!important}
@@ -630,13 +639,9 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <symbol id="arrow" viewBox="0 0 16 16"><path d="M1 8h13M9 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
   <symbol id="plus" viewBox="0 0 20 20"><path d="M10 2v16M2 10h16" stroke="currentColor" stroke-width="1.2"/></symbol>
-  <linearGradient id="goldLeaf" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#F3E0AE"/><stop offset=".42" stop-color="#C6A15B"/><stop offset=".7" stop-color="#E2C68A"/><stop offset="1" stop-color="#8A672A"/>
-  </linearGradient>
   <linearGradient id="goldCrack" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="600" y2="600">
     <stop offset="0" stop-color="#E9CF95"/><stop offset=".35" stop-color="#C6A15B"/><stop offset=".6" stop-color="#E2C68A"/><stop offset="1" stop-color="#9A7533"/>
   </linearGradient>
-  <symbol id="leaf" viewBox="0 0 24 40"><path d="M12 1C20.5 9 22.5 22 12 37 1.5 22 3.5 9 12 1z" fill="url(#goldLeaf)"/><path d="M12 5v35M12 14l-4.5-4M12 14l4.5-4M12 21l-6-5M12 21l6-5M12 28l-5-4.5M12 28l5-4.5" fill="none" stroke="#FFF4D6" stroke-width=".7" stroke-linecap="round" opacity=".55"/></symbol>
 </svg>
 
 <header class="header" id="header">
@@ -1157,6 +1162,18 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const raf = fn => { let queued = false; return () => { if (!queued) { queued = true; requestAnimationFrame(() => { queued = false; fn(); }); } }; };
+  // Lite motion on phones/touch devices (see LITE MOTION in CSS)
+  const lite = matchMedia('(max-width:900px), (pointer:coarse)').matches;
+  // scroll-linked JS at most every ~33ms on lite devices; always lands on the final position
+  const raf30 = fn => {
+    if (!lite) return raf(fn);
+    let queued = false, lastRun = 0;
+    const tick = now => {
+      if (now - lastRun < 32) { requestAnimationFrame(tick); return; }
+      queued = false; lastRun = now; fn();
+    };
+    return () => { if (!queued) { queued = true; requestAnimationFrame(tick); } };
+  };
 
   // Split headings into per-word masks (text stays selectable and in reading order)
   const split = el => {
@@ -1217,7 +1234,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
   const crackIO = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('in'); crackIO.unobserve(e.target); }
   }), { threshold: .2 });
-  $$('.crack').forEach(el => crackIO.observe(el));
+  if (!lite) $$('.crack').forEach(el => crackIO.observe(el));
 
   // Photographic depth fallback where CSS scroll timelines are unsupported
   if (!reduce && !(window.CSS && CSS.supports('animation-timeline: view()'))) {
@@ -1238,43 +1255,6 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
     addEventListener('resize', () => { read(); update(); });
   }
 
-  // Gold leaves (see .leaves): sparse, deterministic placement so the layout
-  // feels composed rather than random; scroll moves each leaf at its own depth.
-  if (!reduce) {
-    const leafLayer = document.createElement('div');
-    leafLayer.className = 'leaves'; leafLayer.setAttribute('aria-hidden', 'true');
-    document.body.append(leafLayer);
-    let leaves = [];
-    const golden = i => (i * 0.618034) % 1;                    // even spread across the width
-    const build = () => {
-      const count = innerWidth <= 700 ? 4 : 6;
-      if (leaves.length === count) return;
-      leafLayer.textContent = '';
-      leaves = Array.from({ length: count }, (_, i) => {
-        const depth = (i % 3) / 2;                              // 0 far · .5 mid · 1 near
-        const el = document.createElement('span');
-        el.className = 'leaf';
-        el.innerHTML = '<span class="leaf-sway"><svg viewBox="0 0 24 40"><use href="#leaf"/></svg></span>';
-        el.style.setProperty('--s', (11 + depth * 15 + golden(i + 3) * 4).toFixed(1) + 'px');
-        el.style.setProperty('--o', (.32 + depth * .36).toFixed(2));
-        el.style.setProperty('--d', (13 + golden(i + 7) * 10).toFixed(1) + 's');
-        el.style.setProperty('--dl', (-golden(i + 11) * 20).toFixed(1) + 's');
-        leafLayer.append(el);
-        return { el, x: .04 + golden(i + 1) * .92, y: golden(i * 7 + 2), speed: .12 + depth * .38, r: Math.round(-60 + golden(i + 5) * 120) };
-      });
-    };
-    const place = () => {
-      const vw = innerWidth, H = innerHeight + 120, sy = scrollY;
-      leaves.forEach(l => {
-        const y = (((l.y * H - sy * l.speed) % H) + H) % H - 60;
-        l.el.style.transform = `translate3d(${(l.x * vw).toFixed(1)}px,${y.toFixed(1)}px,0) rotate(${l.r}deg)`;
-      });
-    };
-    build(); place();
-    addEventListener('scroll', raf(place), { passive: true });
-    addEventListener('resize', raf(() => { build(); place(); }));
-  }
-
   // The Wise owl: scroll-linked takeoff from the roof, then it lands in the
   // bottom-right corner and keeps watch for the rest of the page. Pure function
   // of scroll, so scrolling back up flies it home to its perch on the logo.
@@ -1292,7 +1272,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
       const vw = innerWidth, vh = innerHeight, mobile = vw <= 700;
       const p = clamp((scrollY - 8) / (vh * (mobile ? .85 : .8)));
       if (p === last) return;
-      if (last >= 0 && last < .14 && p >= .14 && typeof shed === 'function') [0, 140, 280].forEach(d => setTimeout(shed, d));
+      if (!lite && last >= 0 && last < .14 && p >= .14 && typeof shed === 'function') [0, 140, 280].forEach(d => setTimeout(shed, d));
       last = p;
       perch.classList.toggle('flying', p > 0);
       perch.classList.toggle('landed', p === 1);
@@ -1352,11 +1332,11 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
     addEventListener('scroll', () => {
       const y = scrollY, dy = y - lastY; lastY = y;
       const now = performance.now();
-      if (dy > 4 && now - lastSpawn > 320 && Math.random() < .55) { lastSpawn = now; shed(); }
+      if (!lite && dy > 4 && now - lastSpawn > 320 && Math.random() < .55) { lastSpawn = now; shed(); }
     }, { passive: true });
 
     owlUpdate();
-    addEventListener('scroll', raf(owlUpdate), { passive: true });
+    addEventListener('scroll', raf30(owlUpdate), { passive: true });
     const refresh = raf(() => { perchBox = null; last = -1; owlUpdate(); });
     addEventListener('resize', refresh);
     $('.plaque').addEventListener('transitionend', refresh);   // header shrink moves the perch
@@ -1393,7 +1373,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
   fontsReady.then(() => { measure(); tlUpdate(); });
   let tlVisible = false;
   new IntersectionObserver(([en]) => { tlVisible = en.isIntersecting; if (tlVisible) tlUpdate(); }, { rootMargin: '20% 0px 20% 0px' }).observe(tl);
-  addEventListener('scroll', raf(() => { if (tlVisible) tlUpdate(); }), { passive: true });
+  addEventListener('scroll', raf30(() => { if (tlVisible) tlUpdate(); }), { passive: true });
   addEventListener('resize', raf(() => { measure(); tlUpdate(); }));
 
   // Solutions: each gallery pins while vertical scroll drives it to the right.
@@ -1419,7 +1399,9 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
     if (k.img) k.img.style.transform = `translateX(${(k.ry * 1.44).toFixed(1)}px)`;
     if (k.cap) k.cap.style.transform = `translateX(${(k.ry * -.5).toFixed(1)}px)`;
   };
+  const cssGallery = lite && window.CSS && CSS.supports('view-timeline-name: --hs');
   const hsUpdate = () => {
+    if (cssGallery) return;
     const vw = innerWidth, vh = innerHeight;
     galleries.forEach(g => {
       const top = g.top - scrollY;
@@ -1429,6 +1411,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
       g.track.style.transform = `translate3d(${x.toFixed(1)}px,0,0)`;
       g.bar.style.transform = `scaleX(${p.toFixed(4)})`;
       if (reduce) return;
+      if (lite) return;                                     // flat cards on touch devices
       g.cards.forEach(k => {
         k.ry = Math.max(-1, Math.min(1, (k.cx + x - vw / 2) / vw)) * -18;
         tiltCard(k);
