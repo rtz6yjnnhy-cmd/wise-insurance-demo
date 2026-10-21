@@ -365,7 +365,9 @@ fieldset.invalid .chip span{border-color:rgba(163,57,43,.5)}
 /* Scroll-linked depth: native scroll timeline, rAF fallback in JS */
 @supports (animation-timeline: view()){
   .js [data-plx]{animation:plx linear both;animation-timeline:view()}
-  @keyframes plx{from{translate:0 calc(var(--plx) * -1)}to{translate:0 var(--plx)}}
+  @keyframes plx{from{translate:0 -34px}to{translate:0 34px}}
+  @keyframes plxM{from{translate:0 -18px}to{translate:0 18px}}
+  @media (max-width:700px){.js [data-plx]{animation-name:plxM}}
 }
 
 /* Cards: staggered vertical entrance (--i set per batch in JS) */
@@ -450,21 +452,22 @@ fieldset.invalid .chip span{border-color:rgba(163,57,43,.5)}
 .hs-progress i{position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left}
 
 /* Floating card: Float (idle levitation) + 3D tilt (scroll coverflow + pointer) */
+.fcard-in.ease,.fcard-in.ease img,.fcard-in.ease figcaption{transition:transform .4s var(--m)}
 .fcard{flex:none;position:relative;width:var(--cw);height:var(--ch);margin:0;display:block;perspective:1100px}
 .fcard::after{content:"";position:absolute;left:10%;right:10%;bottom:-34px;height:26px;border-radius:50%;background:radial-gradient(closest-side,rgba(7,26,51,.38),rgba(7,26,51,0));pointer-events:none;
   animation:floatShadow 6.5s ease-in-out infinite alternate;animation-delay:calc(var(--k,0) * -1.4s)}
 .fcard-in{position:relative;display:block;height:100%;border-radius:10px;overflow:hidden;background:var(--navy);
-  transform:rotateY(calc(var(--ry,0deg) + var(--py,0deg))) rotateX(var(--px,0deg));transition:transform .35s var(--m);
+  transform:none;
   box-shadow:0 40px 70px -38px rgba(7,26,51,.55),0 12px 24px -12px rgba(7,26,51,.3),inset 0 0 0 1px rgba(255,255,255,.08);
   animation:float 6.5s ease-in-out infinite alternate;animation-delay:calc(var(--k,0) * -1.4s)}
 @keyframes float{from{translate:0 -8px}to{translate:0 8px}}
 @keyframes floatShadow{from{transform:scale(.82);opacity:.55}to{transform:scale(1);opacity:1}}
-.fcard img{position:absolute;inset:-4% -8%;width:116%;height:108%;max-width:none;object-fit:cover;transform:translateX(var(--ix,0px));transition:transform .35s var(--m)}
+.fcard img{position:absolute;inset:-4% -8%;width:116%;height:108%;max-width:none;object-fit:cover}
 .fcard-in::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(7,26,51,.82) 0%,rgba(7,26,51,.25) 38%,rgba(7,26,51,0) 60%);pointer-events:none}
 .glare{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .35s var(--m);
   background:radial-gradient(circle at var(--gx,50%) var(--gy,0%),rgba(255,248,230,.32),rgba(255,248,230,0) 55%)}
 @media (hover:hover){.fcard:hover .glare{opacity:1}}
-.fcard figcaption{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:22px 24px 24px;color:var(--ivory);transform:translateX(calc(var(--ix,0px) * -.35));transition:transform .35s var(--m)}
+.fcard figcaption{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:22px 24px 24px;color:var(--ivory)}
 .fcard figcaption b{display:block;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-2);margin-bottom:8px}
 .fcard figcaption span{display:block;font-family:var(--serif);font-size:clamp(22px,2vw,28px);line-height:1.12}
 .fcard-cta{--cw:calc(var(--ch) * .7)}
@@ -481,6 +484,12 @@ fieldset.invalid .chip span{border-color:rgba(163,57,43,.5)}
   .hs-tags{margin:18px 0 20px}
   .fcard::after{bottom:-28px}
   .fcard figcaption{padding:18px 18px 20px}
+}
+
+/* phones: no backdrop blur or per-particle shadows while scrolling */
+@media (max-width:900px){
+  .header.scrolled{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(7,26,51,.97)}
+  .leaf-sway,.feather{filter:none}
 }
 
 /* Language switch (ES default / EN) */
@@ -519,10 +528,10 @@ fieldset.invalid .chip span{border-color:rgba(163,57,43,.5)}
   filter:drop-shadow(0 2px 2px rgba(7,26,51,.18))}
 .leaf-sway svg{display:block;width:100%;height:auto;overflow:visible}
 @keyframes leafSway{
-  0%{transform:perspective(320px) translate(0,0) rotate(var(--r)) rotateY(-50deg)}
-  35%{transform:perspective(320px) translate(16px,12px) rotate(calc(var(--r) + 20deg)) rotateY(10deg)}
-  70%{transform:perspective(320px) translate(-12px,22px) rotate(calc(var(--r) - 10deg)) rotateY(45deg)}
-  100%{transform:perspective(320px) translate(8px,-4px) rotate(calc(var(--r) + 8deg)) rotateY(-20deg)}
+  0%{transform:perspective(320px) translate(0,0) rotate(0deg) rotateY(-50deg)}
+  35%{transform:perspective(320px) translate(16px,12px) rotate(20deg) rotateY(10deg)}
+  70%{transform:perspective(320px) translate(-12px,22px) rotate(-10deg) rotateY(45deg)}
+  100%{transform:perspective(320px) translate(8px,-4px) rotate(8deg) rotateY(-20deg)}
 }
 
 /* Background music control */
@@ -541,15 +550,25 @@ fieldset.invalid .chip span{border-color:rgba(163,57,43,.5)}
 
 /* Float on lettering and buttons: each word and control drifts on its own
    phase (--fd, set in JS), so headings ripple gently instead of sitting flat */
-@keyframes drift{from{translate:0 calc(var(--amp) * -1)}to{translate:0 var(--amp)}}
+/* fixed amplitudes: keyframes without var() stay on the compositor */
+@keyframes drift15{from{translate:0 -1.5px}to{translate:0 1.5px}}
+@keyframes drift2{from{translate:0 -2px}to{translate:0 2px}}
+@keyframes drift3{from{translate:0 -3px}to{translate:0 3px}}
+@keyframes drift4{from{translate:0 -4px}to{translate:0 4px}}
 .w,.btn,.hs-link,.link-btn,.music,.chip span,.nav a.link,.hs-num,.step-num,.hs-count,.eyebrow:not(.h-eyebrow),
 .lede:not(.h-copy),.hs-intro p,.step p,.principle,.assurances li,.form-title,.demo-note,.footer-links a{
-  --amp:2px;animation:drift var(--dur,6s) ease-in-out infinite alternate;animation-delay:var(--fd,0s)}
-.w{--amp:3px;--dur:5.2s}
-.hero h1 .w{--amp:4px;--dur:5.8s}
-.btn,.hs-link,.music,.link-btn{--amp:3px;--dur:4.6s}
-.lede:not(.h-copy),.hs-intro p,.step p,.principle,.assurances li{--amp:1.5px;--dur:7.5s}
-.still .w,.still .btn,.still .hs-link,.still .chip span,.still .hs-num,.still .step-num,.still .eyebrow,.still .lede,.still .hs-intro p,.still .step p,.still .principle,.still .assurances li,.still .form-title,.still .demo-note{animation-play-state:paused}
+  animation:drift2 var(--dur,6s) ease-in-out infinite alternate;animation-delay:var(--fd,0s)}
+.w{animation-name:drift3;--dur:5.2s}
+.hero h1 .w{animation-name:drift4;--dur:5.8s}
+.btn,.hs-link,.music,.link-btn{animation-name:drift3;--dur:4.6s}
+.lede:not(.h-copy),.hs-intro p,.step p,.principle,.assurances li{animation-name:drift15;--dur:7.5s}
+/* phones: a 1.5px drift on body copy is imperceptible but costs a layer per block */
+@media (max-width:700px){.lede:not(.h-copy),.hs-intro p,.step p,.principle,.assurances li,.demo-note,.form-title,.hs-count{animation:none}
+  /* phones: the heading floats as one piece instead of word by word (one layer, not ~10) */
+  .w,.hero h1 .w{animation:none}
+  [data-split],.hero h1{animation:drift3 5.6s ease-in-out infinite alternate}
+  .still [data-split],.still.footer [data-split]{animation-name:none}}
+.still .w,.still .btn,.still .hs-link,.still .chip span,.still .hs-num,.still .step-num,.still .eyebrow,.still .lede,.still .hs-intro p,.still .step p,.still .principle,.still .assurances li,.still .form-title,.still .demo-note,.still .fcard-in,.still .fcard::after{animation-name:none}
 
 /* 3D scroll: each section rises out of perspective, lies flat while read,
    then tips gently away as it leaves. Native scroll timelines; static elsewhere. */
@@ -559,11 +578,22 @@ fieldset.invalid .chip span{border-color:rgba(163,57,43,.5)}
   .js main > section:not(.hero):not(#solutions),.js .footer{transform-origin:50% 50%;animation:depth linear both;animation-timeline:view();animation-range:cover 0% cover 100%}
   .js .hero{transform-origin:50% 100%;animation:depthOut linear both;animation-timeline:view();animation-range:exit 0% exit 100%}
   @keyframes depth{
-    0%{transform:perspective(1400px) translateY(60px) rotateX(var(--tilt)) scale(.94);opacity:.35}
+    0%{transform:perspective(1400px) translateY(60px) rotateX(11deg) scale(.94);opacity:.35}
     24%,80%{transform:perspective(1400px) translateY(0) rotateX(0) scale(1);opacity:1}
-    100%{transform:perspective(1400px) translateY(-24px) rotateX(calc(var(--tilt) * -.55)) scale(.965);opacity:.8}
+    100%{transform:perspective(1400px) translateY(-24px) rotateX(-6deg) scale(.965);opacity:.8}
   }
-  @keyframes depthOut{to{transform:perspective(1400px) rotateX(calc(var(--tilt) * -.8)) scale(.93);opacity:.55}}
+  @keyframes depthOut{to{transform:perspective(1400px) rotateX(-8.8deg) scale(.93);opacity:.55}}
+  /* phones: same choreography, gentler angles, no opacity (saves an offscreen pass per section) */
+  @keyframes depthM{
+    0%{transform:perspective(1400px) translateY(40px) rotateX(8deg) scale(.95)}
+    24%,80%{transform:perspective(1400px) translateY(0) rotateX(0) scale(1)}
+    100%{transform:perspective(1400px) translateY(-16px) rotateX(-4.4deg) scale(.97)}
+  }
+  @keyframes depthOutM{to{transform:perspective(1400px) rotateX(-6.4deg) scale(.95)}}
+  @media (max-width:700px){
+    .js main > section:not(.hero):not(#solutions),.js .footer{animation-name:depthM}
+    .js .hero{animation-name:depthOutM}
+  }
 }
 
 /* Feathers shed by the owl while scrolling down */
@@ -576,6 +606,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
   .js main > section,.js .footer{animation:none!important;transform:none!important;opacity:1!important}
   .feathers{display:none}
   .leaves{display:none}
+  [data-split],.hero h1{animation:none!important}
   .js .crack path{stroke-dashoffset:0!important;transition:none!important}
   .w,.btn,.hs-link,.link-btn,.music,.chip span,.nav a.link,.hs-num,.step-num,.hs-count,.eyebrow,.lede,.hs-intro p,.step p,.principle,.assurances li,.form-title,.demo-note,.footer-links a{animation:none!important}
   .music-bars i{animation:none!important}
@@ -1228,16 +1259,15 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
         el.style.setProperty('--o', (.32 + depth * .36).toFixed(2));
         el.style.setProperty('--d', (13 + golden(i + 7) * 10).toFixed(1) + 's');
         el.style.setProperty('--dl', (-golden(i + 11) * 20).toFixed(1) + 's');
-        el.style.setProperty('--r', Math.round(-60 + golden(i + 5) * 120) + 'deg');
         leafLayer.append(el);
-        return { el, x: .04 + golden(i + 1) * .92, y: golden(i * 7 + 2), speed: .12 + depth * .38 };
+        return { el, x: .04 + golden(i + 1) * .92, y: golden(i * 7 + 2), speed: .12 + depth * .38, r: Math.round(-60 + golden(i + 5) * 120) };
       });
     };
     const place = () => {
       const vw = innerWidth, H = innerHeight + 120, sy = scrollY;
       leaves.forEach(l => {
         const y = (((l.y * H - sy * l.speed) % H) + H) % H - 60;
-        l.el.style.transform = `translate3d(${(l.x * vw).toFixed(1)}px,${y.toFixed(1)}px,0)`;
+        l.el.style.transform = `translate3d(${(l.x * vw).toFixed(1)}px,${y.toFixed(1)}px,0) rotate(${l.r}deg)`;
       });
     };
     build(); place();
@@ -1257,6 +1287,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
     const bez = (t, a, b, c) => (1 - t) * (1 - t) * a + 2 * (1 - t) * t * b + t * t * c;
     const dbez = (t, a, b, c) => 2 * (1 - t) * (b - a) + 2 * t * (c - b);
     let last = -1;
+    let perchBox = null;
     const owlUpdate = () => {
       const vw = innerWidth, vh = innerHeight, mobile = vw <= 700;
       const p = clamp((scrollY - 8) / (vh * (mobile ? .85 : .8)));
@@ -1266,7 +1297,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
       perch.classList.toggle('flying', p > 0);
       perch.classList.toggle('landed', p === 1);
       if (p === 0) { fly.style.transform = ''; return; }
-      const r = perch.getBoundingClientRect();          // untransformed perch box
+      const r = perchBox || (perchBox = perch.getBoundingClientRect());   // cached; refreshed on resize / header shrink
       const ox = r.left + r.width / 2, oy = r.top + r.height / 2;
       // A · preparation: lean forward, body rises 8px
       const a = io3(seg(p, 0, .12));
@@ -1326,7 +1357,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
 
     owlUpdate();
     addEventListener('scroll', raf(owlUpdate), { passive: true });
-    const refresh = raf(() => { last = -1; owlUpdate(); });
+    const refresh = raf(() => { perchBox = null; last = -1; owlUpdate(); });
     addEventListener('resize', refresh);
     $('.plaque').addEventListener('transitionend', refresh);   // header shrink moves the perch
   }
@@ -1335,7 +1366,11 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
   const tl = $('#timeline'), tlLine = $('.timeline-line', tl), steps = $$('.step', tl);
   const vertical = matchMedia('(max-width:820px)');
   let stops = [];
+  // layout positions (offsetTop ignores the section's 3D scroll transform)
+  const docTop = el => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
+  let tlTop = 0, lineTop = 0, lineH = 1;
   const measure = () => {
+    tlTop = docTop(tl); lineTop = docTop(tlLine); lineH = tlLine.offsetHeight || 1;
     const lr = tlLine.getBoundingClientRect();
     stops = steps.map(s => {
       const n = $('.step-num', s).getBoundingClientRect();
@@ -1345,10 +1380,13 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
   const tlUpdate = () => {
     const vh = innerHeight;
     let p = reduce ? 1 : vertical.matches
-      ? (vh * .62 - tlLine.getBoundingClientRect().top) / tlLine.getBoundingClientRect().height
-      : (vh * .86 - tl.getBoundingClientRect().top) / (vh * .42);
+      ? (vh * .62 - (lineTop - scrollY)) / lineH
+      : (vh * .86 - (tlTop - scrollY)) / (vh * .42);
     p = Math.min(1, Math.max(0, p));
-    tl.style.setProperty('--tl', p.toFixed(4));
+    const v = p.toFixed(4);
+    if (v === tl._tl) return;
+    tl._tl = v;
+    tl.style.setProperty('--tl', v);
     steps.forEach((s, i) => s.classList.toggle('on', p >= stops[i]));
   };
   measure(); tlUpdate();
@@ -1362,48 +1400,66 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
   // Cards tilt in 3D by their distance from the centre (coverflow), and follow
   // the pointer on devices that hover (Apple TV-style parallax tilt).
   const galleries = $$('.hs').map(el => ({
-    el, track: $('.hs-track', el), bar: $('.hs-progress i', el), cards: $$('.fcard', el), dist: 0, pos: []
+    el, track: $('.hs-track', el), bar: $('.hs-progress i', el), dist: 0, top: 0, h: 0,
+    cards: $$('.fcard', el).map(c => ({ c, inner: $('.fcard-in', c), img: $('img', c), cap: $('figcaption', c), cx: 0, ry: 0, px: 0, py: 0, last: '' }))
   }));
   const hsLayout = () => galleries.forEach(g => {
     g.track.style.transform = '';
     g.dist = Math.max(0, g.track.scrollWidth - innerWidth);
     g.el.style.height = (innerHeight + g.dist) + 'px';
-    g.pos = g.cards.map(c => [c.offsetLeft + c.offsetWidth / 2, c]);
+    g.cards.forEach(k => { k.cx = k.c.offsetLeft + k.c.offsetWidth / 2; k.last = ''; });
+    g.top = g.el.getBoundingClientRect().top + scrollY;   // #solutions is never transformed
+    g.h = g.el.offsetHeight;
   });
+  const tiltCard = k => {
+    const t = `rotateY(${(k.ry + k.py).toFixed(2)}deg) rotateX(${k.px.toFixed(2)}deg)`;
+    if (t === k.last) return;
+    k.last = t;
+    k.inner.style.transform = t;
+    if (k.img) k.img.style.transform = `translateX(${(k.ry * 1.44).toFixed(1)}px)`;
+    if (k.cap) k.cap.style.transform = `translateX(${(k.ry * -.5).toFixed(1)}px)`;
+  };
   const hsUpdate = () => {
     const vw = innerWidth, vh = innerHeight;
     galleries.forEach(g => {
-      const r = g.el.getBoundingClientRect();
-      if (r.bottom < -vh * .5 || r.top > vh * 1.5) return;
-      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - vh)));
+      const top = g.top - scrollY;
+      if (top + g.h < -vh * .5 || top > vh * 1.5) return;
+      const p = Math.min(1, Math.max(0, -top / Math.max(1, g.h - vh)));
       const x = -p * g.dist;
       g.track.style.transform = `translate3d(${x.toFixed(1)}px,0,0)`;
       g.bar.style.transform = `scaleX(${p.toFixed(4)})`;
       if (reduce) return;
-      g.pos.forEach(([cx, c]) => {
-        const d = Math.max(-1, Math.min(1, (cx + x - vw / 2) / vw));
-        c.style.setProperty('--ry', (d * -18).toFixed(2) + 'deg');
-        c.style.setProperty('--ix', (d * -26).toFixed(1) + 'px');
+      g.cards.forEach(k => {
+        k.ry = Math.max(-1, Math.min(1, (k.cx + x - vw / 2) / vw)) * -18;
+        tiltCard(k);
       });
     });
   };
-  hsLayout(); hsUpdate();
+  // gallery heights move everything below them, so the timeline re-measures after
+  const relayout = () => { hsLayout(); hsUpdate(); measure(); tlUpdate(); };
+  relayout();
   addEventListener('scroll', raf(hsUpdate), { passive: true });
-  addEventListener('resize', raf(() => { hsLayout(); hsUpdate(); }));
-  addEventListener('load', () => { hsLayout(); hsUpdate(); });
+  addEventListener('resize', raf(relayout));
+  addEventListener('load', relayout);
+  fontsReady.then(relayout);
 
   if (!reduce && matchMedia('(hover:hover)').matches) {
-    $$('.fcard').forEach(c => {
+    galleries.forEach(g => g.cards.forEach(k => {
+      const c = k.c;
       c.addEventListener('pointermove', e => {
         const b = c.getBoundingClientRect();
         const u = (e.clientX - b.left) / b.width, v = (e.clientY - b.top) / b.height;
-        c.style.setProperty('--py', ((u - .5) * 14).toFixed(2) + 'deg');
-        c.style.setProperty('--px', ((.5 - v) * 12).toFixed(2) + 'deg');
+        k.py = (u - .5) * 14; k.px = (.5 - v) * 12;
+        tiltCard(k);
         c.style.setProperty('--gx', (u * 100).toFixed(1) + '%');
         c.style.setProperty('--gy', (v * 100).toFixed(1) + '%');
       });
-      c.addEventListener('pointerleave', () => { ['--py', '--px'].forEach(v => c.style.setProperty(v, '0deg')); });
-    });
+      c.addEventListener('pointerleave', () => {
+        k.py = k.px = 0;
+        k.inner.classList.add('ease'); tiltCard(k);
+        setTimeout(() => k.inner.classList.remove('ease'), 420);
+      });
+    }));
   }
 
   // Float phases: words ripple across a heading; other elements get scattered phases
@@ -1412,7 +1468,7 @@ main,.footer-clip{overflow-x:hidden;overflow-x:clip}
     .forEach((el, i) => el.style.setProperty('--fd', `${(-((i * 1.37) % 6)).toFixed(2)}s`));
   // pause the drift in sections that are off screen
   const stillIO = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('still', !e.isIntersecting)), { rootMargin: '25% 0px' });
-  $$('main > section, .footer').forEach(el => stillIO.observe(el));
+  $$('main > section, .footer, .hs').forEach(el => stillIO.observe(el));   // each gallery idles until it is on screen
 
   // Background music: Debussy, Clair de Lune. Browsers only allow sound after a
   // user gesture, so it starts on the first tap/click/key, fades in softly, and
